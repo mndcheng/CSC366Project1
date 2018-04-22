@@ -1,5 +1,5 @@
 import java.io.Serializable;
-import java.sql.SQLException;
+import java.sql.*;
 
 import javax.annotation.ManagedBean;
 import javax.faces.application.FacesMessage;
@@ -17,7 +17,7 @@ import javax.inject.Named;
 @Named(value = "login")
 @SessionScoped
 @ManagedBean
-public class Login implements Serializable {
+public class Login extends DBConnect implements Serializable {
 
     private String login;
     private String password;
@@ -49,12 +49,23 @@ public class Login implements Serializable {
 
     public void validate(FacesContext context, UIComponent component, Object value)
             throws ValidatorException, SQLException {
+        DBConnect dbc = new DBConnect(); 
+        Connection con = dbc.getConnection(); 
+        
         login = loginUI.getLocalValue().toString();
         password = value.toString();
-        if (!((login.equals("lubo") && password.equals("secret")))) {
+        
+        String selectStmt = "select " + login + "," + password + "from employees";
+        try (Statement stmt = con.createStatement()) {
+            stmt.execute(selectStmt); 
+            ResultSet rs = stmt.executeQuery(selectStmt); 
+        } catch (SQLException e) {
+            con.rollback();
+        }
+        /*if (!((login.equals("lubo") && password.equals("secret")))) {
             FacesMessage errorMessage = new FacesMessage("Wrong login/password");
             throw new ValidatorException(errorMessage);
-        }
+        }*/
     }
 
     public String go() {
