@@ -21,7 +21,9 @@ public class Login extends DBConnect implements Serializable {
 
     private String login;
     private String password;
+    public String succeed; 
     private UIInput loginUI;
+    private DBConnect dbc = new DBConnect();
 
     public UIInput getLoginUI() {
         return loginUI;
@@ -47,30 +49,38 @@ public class Login extends DBConnect implements Serializable {
         this.password = password;
     }
 
-    public void validate(FacesContext context, UIComponent component, Object value)
-            throws ValidatorException, SQLException {
-        DBConnect dbc = new DBConnect(); 
+    public void emplValidate(FacesContext context, UIComponent component, Object value)
+            throws ValidatorException, SQLException { 
         Connection con = dbc.getConnection(); 
         
         login = loginUI.getLocalValue().toString();
         password = value.toString();
         
         String selectStmt = "select " + login + "," + password + "from employees";
+        con.setAutoCommit(false); 
         try (Statement stmt = con.createStatement()) {
             stmt.execute(selectStmt); 
             ResultSet rs = stmt.executeQuery(selectStmt); 
+            int rowNum = rs.getRow();
+
+            if (rowNum < 1) {
+                succeed = "fail"; 
+                FacesMessage errorMessage = new FacesMessage("Wrong login/password");
+                throw new ValidatorException(errorMessage);
+            }
+            succeed = "success"; 
+            con.commit(); 
         } catch (SQLException e) {
             con.rollback();
         }
-        /*if (!((login.equals("lubo") && password.equals("secret")))) {
-            FacesMessage errorMessage = new FacesMessage("Wrong login/password");
-            throw new ValidatorException(errorMessage);
-        }*/
     }
 
     public String go() {
-      //  Util.invalidateUserSession();
-        return "success";
+        if (succeed.equals("success")) {
+            return "success";
+        }
+        Util.invalidateUserSession();
+        return "fail"; 
     }
 
 }
