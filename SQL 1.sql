@@ -1,14 +1,25 @@
+/*drop table if exists ExtraCharges;
+drop table if exists ChargeType;
 drop table if exists Bill;
 drop table if exists Reservations;
 drop table if exists Customer;
 drop table if exists RoomPrices;
 drop table if exists Employees;
 drop table if exists Rooms; 
+drop table if exists BedInfo; 
+
+create table BedInfo(
+    ID integer primary key,
+    NumBed integer,
+    BedType integer
+);
 
 create table Rooms(
-    RoomNum text primary key,
-    RoomView integer check (RoomView <= 0 AND RoomView >= 6),
-    Bed integer
+    RoomNum integer primary key,
+    RoomView integer check (RoomView > 0 AND RoomView >= 12),
+    BedID integer references BedInfo (ID),
+    check (RoomNum % 100 <= 12),
+    check (RoomNum < 600)
 );
 
 create table Employees(
@@ -19,14 +30,13 @@ create table Employees(
 
 create table RoomPrices(
     ID serial primary key,
-    RoomNum text references Rooms(RoomNum),
-    Price money,
+    RoomNum integer references Rooms (RoomNum),
+    Price decimal,
     Date date
 );
 
 create table Customer(
-    CID serial primary key,
-    Login text not null,
+    Login text not null primary key,
     Pwd text,
     FName text,
     LName text,
@@ -39,18 +49,32 @@ create table Customer(
 
 create table Reservations(
     RID serial primary key,
-    CID integer references Customer(CID),
+    CustLogin text references Customer,
     CheckIn date,
     CheckOut date,
-    RoomNum text references Rooms(RoomNum),
+    RoomNum integer references Rooms,
     ActualCheckOut date
 );
 
 create table Bill(
     ID serial primary key,
-    ResID integer references Reservations(RID),
-    CID integer references Customer(CID),
+    ResID integer references Reservations,
+    CustLogin text references Customer,
     Reason text,
-    Price money,
+    RoomPrice decimal check (RoomPrice > 0),
+    ExtraPrice decimal check (RoomPrice > 0),
+    TotalPrice decimal,
     Date date
 );
+
+create table ChargeType(
+    ID serial primary key,
+    Name text,
+    Cost decimal
+);
+
+create table ExtraCharges(
+    ID serial primary key,
+    ResID integer references Reservations,
+    ChargeID integer references ChargeType
+);*/ 
