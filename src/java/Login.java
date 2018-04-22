@@ -49,33 +49,37 @@ public class Login extends DBConnect implements Serializable {
 
     public void validate(FacesContext context, UIComponent component, Object value)
             throws ValidatorException, SQLException {
-        DBConnect dbc = new DBConnect(); 
-        Connection con = dbc.getConnection(); 
+        DBConnect dbc = new DBConnect();
+        Connection con = dbc.getConnection();
         
         login = loginUI.getLocalValue().toString();
         password = value.toString();
         
-        String selectStmt = "select " + login + "," + password + "from Employees";
+        String selectStmt = "select * from Employees where Login='" + login + "' and Pwd='" + password + "'";
         try (Statement stmt = con.createStatement()) {
-            stmt.execute(selectStmt); 
+            stmt.execute(selectStmt);
             ResultSet res = stmt.executeQuery(selectStmt);
             
-            res.next();
-            if (res.wasNull()) { //executeQuery doesnt actually returns null, ie can't say res == null
-                selectStmt = "select " + login + "," + password + "from Customers";
+//            res.next();
+            if (!res.next()) { //executeQuery doesnt actually returns null, ie can't say res == null
+                selectStmt = "select * from Customer where Login='" + login + "' and Pwd='" + password + "'";
                 try (Statement s = con.createStatement()) {
-                    s.execute(selectStmt); 
+                    s.execute(selectStmt);
                     res = stmt.executeQuery(selectStmt);
                     
-                    res.next();
-                    if (res.wasNull()) { //executeQuery doesnt actually returns null, ie can't say res == null
+//                    res.next();
+                    if (!res.next()) { //executeQuery doesnt actually returns null, ie can't say res == null
                         FacesMessage errorMessage = new FacesMessage("Incorrect login/password");
                         throw new ValidatorException(errorMessage);
                     }
+                    
+                    go();
                 } catch (SQLException e) {
                     con.rollback();
                 }
             }
+            
+            go();
             
         } catch (SQLException e) {
             con.rollback();
@@ -86,5 +90,4 @@ public class Login extends DBConnect implements Serializable {
       //  Util.invalidateUserSession();
         return "success";
     }
-
 }
