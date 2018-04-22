@@ -55,17 +55,31 @@ public class Login extends DBConnect implements Serializable {
         login = loginUI.getLocalValue().toString();
         password = value.toString();
         
-        String selectStmt = "select " + login + "," + password + "from employees";
+        String selectStmt = "select " + login + "," + password + "from Employees";
         try (Statement stmt = con.createStatement()) {
             stmt.execute(selectStmt); 
-            ResultSet rs = stmt.executeQuery(selectStmt); 
+            ResultSet res = stmt.executeQuery(selectStmt);
+            
+            res.next();
+            if (res.wasNull()) { //executeQuery doesnt actually returns null, ie can't say res == null
+                selectStmt = "select " + login + "," + password + "from Customers";
+                try (Statement s = con.createStatement()) {
+                    s.execute(selectStmt); 
+                    res = stmt.executeQuery(selectStmt);
+                    
+                    res.next();
+                    if (res.wasNull()) { //executeQuery doesnt actually returns null, ie can't say res == null
+                        FacesMessage errorMessage = new FacesMessage("Incorrect login/password");
+                        throw new ValidatorException(errorMessage);
+                    }
+                } catch (SQLException e) {
+                    con.rollback();
+                }
+            }
+            
         } catch (SQLException e) {
             con.rollback();
         }
-        /*if (!((login.equals("lubo") && password.equals("secret")))) {
-            FacesMessage errorMessage = new FacesMessage("Wrong login/password");
-            throw new ValidatorException(errorMessage);
-        }*/
     }
 
     public String go() {

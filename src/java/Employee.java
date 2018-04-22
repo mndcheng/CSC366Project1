@@ -120,12 +120,13 @@ public class Employee implements Serializable {
 
         Statement statement = con.createStatement();
 
-        PreparedStatement preparedStatement = con.prepareStatement("Insert into Employee values(?,?,?,?,?)");
+        PreparedStatement preparedStatement = con.prepareStatement("Insert into Employee values(?,?,?,?,?,?)");
         preparedStatement.setString(1, emplID);
-        preparedStatement.setString(2, name);
-        preparedStatement.setString(3, email);
-        preparedStatement.setString(4, phone);
-        preparedStatement.setBoolean(5, isAdmin);
+        preparedStatement.setString(2, pwd);
+        preparedStatement.setString(3, name);
+        preparedStatement.setString(4, email);
+        preparedStatement.setString(5, phone);
+        preparedStatement.setBoolean(6, isAdmin);
         preparedStatement.executeUpdate();
         statement.close();
         con.commit();
