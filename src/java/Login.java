@@ -60,15 +60,13 @@ public class Login extends DBConnect implements Serializable {
             stmt.execute(selectStmt);
             ResultSet res = stmt.executeQuery(selectStmt);
             
-//            res.next();
-            if (!res.next()) { //executeQuery doesnt actually returns null, ie can't say res == null
+            if (!res.next()) {
                 selectStmt = "select * from Customer where Login='" + login + "' and Pwd='" + password + "'";
                 try (Statement s = con.createStatement()) {
                     s.execute(selectStmt);
                     res = stmt.executeQuery(selectStmt);
                     
-//                    res.next();
-                    if (!res.next()) { //executeQuery doesnt actually returns null, ie can't say res == null
+                    if (!res.next()) {
                         FacesMessage errorMessage = new FacesMessage("Incorrect login/password");
                         throw new ValidatorException(errorMessage);
                     }
