@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import javax.el.ELContext;
 import javax.faces.bean.ManagedProperty;
+import java.time.LocalDate; 
 
 @Named(value = "customer")
 @SessionScoped
@@ -36,46 +37,23 @@ public class Customer implements Serializable {
     }
 
     private DBConnect dbConnect = new DBConnect();
-    //private Integer CID;
     private String fname;
     private String lname;
     private String email;
     private String address;
     private String ccn;
-    private Date exp_date;
+    private String exp_date;
     private Integer crccode; 
     private Date created_date;
 
-    /*public Integer getCID() throws SQLException {
-        if (CID == null) {
-            Connection con = dbConnect.getConnection();
-
-            if (con == null) {
-                throw new SQLException("Can't get database connection");
-            }
-
-            PreparedStatement ps = con.prepareStatement(
-                            "select max(customer_id)+1 from customer");
-            ResultSet result = ps.executeQuery();
-            if (!result.next()) {
-                return null;
-            }
-            CID = result.getInt(1);
-            result.close();
-            con.close();
-        }
-        return CID;
-    }
-
-    public void setCustomerID(Integer customerID) {
-        this.CID = customerID;
-    }*/
-
-    public String getFName() {
-        // ELContext elContext = FacesContext.getCurrentInstance().getELContext();
-        //Login login = (Login) elContext.getELResolver().getValue(elContext, null, "login");
+    public String getLoginUser() {
+        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+        Login login = (Login) elContext.getELResolver().getValue(elContext, null, "login");
     
-        //  return login.getLogin();
+        return login.getLogin();
+    }
+    
+    public String getFName() {
         if (fname == null) {
             try(Connection con = dbConnect.getConnection()) {
                 PreparedStatement ps = con.prepareStatement("select fname from customer");
@@ -185,22 +163,51 @@ public class Customer implements Serializable {
         this.ccn = ccn; 
     }
     
-    public Date getExpDate() {
-        return exp_date; 
+    public String getExpDate() {
+        if (exp_date == null) {
+            try(Connection con = dbConnect.getConnection()) {
+                PreparedStatement ps = con.prepareStatement("select expdate from customer");
+                ResultSet result = ps.executeQuery();
+                if (!result.next()) {
+                    return null;
+                }
+                exp_date = result.getString("expdate"); 
+                result.close();
+                con.close();
+            } catch(SQLException e) {
+                System.out.println("Can't get database connection"); 
+            }
+        }
+        return exp_date;
     }
     
-    public void setExpDate(Date exp_date) {
+    public void setExpDate(String exp_date) {
         this.exp_date = exp_date; 
     }
     
     public Integer getCRCCode() {
-        return crccode; 
+        if (crccode == null) {
+            try(Connection con = dbConnect.getConnection()) {
+                PreparedStatement ps = con.prepareStatement("select crccode from customer");
+                ResultSet result = ps.executeQuery();
+                if (!result.next()) {
+                    return null;
+                }
+                crccode = result.getInt("crccode"); 
+                result.close();
+                con.close();
+            } catch(SQLException e) {
+                System.out.println("Can't get database connection"); 
+            }
+        }
+        return crccode;
     }
     
     public void setCRCCode(Integer code) {
         this.crccode = code; 
     }
-
+    
+    /* connect this to DB as well? */ 
     public Date getCreated_date() {
         return created_date;
     }
@@ -220,11 +227,17 @@ public class Customer implements Serializable {
 
         Statement statement = con.createStatement();
 
-        PreparedStatement preparedStatement = con.prepareStatement("Insert into Customer values(?,?,?,?)");
-        preparedStatement.setInt(1, CID);
-        preparedStatement.setString(2, fname);
-        preparedStatement.setString(3, address);
-        preparedStatement.setDate(4, new java.sql.Date(created_date.getTime()));
+        PreparedStatement preparedStatement = con.prepareStatement("Insert into Customer values(?,?,?,?,?,?,?,?,?)");
+        preparedStatement.setString(1, getLoginUser()); // check difference between these two
+        preparedStatement.setString(2, login.getPassword());
+        preparedStatement.setString(3, fname);
+        preparedStatement.setString(4, lname);
+        preparedStatement.setString(5, email);
+        preparedStatement.setString(6, address);
+        preparedStatement.setString(7, ccn); 
+        preparedStatement.setDate(8, java.sql.Date.valueOf(exp_date));
+        preparedStatement.setInt(9, crccode); 
+        preparedStatement.setDate(8, new java.sql.Date(created_date.getTime()));
         preparedStatement.executeUpdate();
         statement.close();
         con.commit();
@@ -242,7 +255,7 @@ public class Customer implements Serializable {
         con.setAutoCommit(false);
 
         Statement statement = con.createStatement();
-        statement.executeUpdate("Delete from Customer where customer_id = " + CID);
+        statement.executeUpdate("Delete from Customer where login = " + getLoginUser());
         statement.close();
         con.commit();
         con.close();
@@ -254,7 +267,7 @@ public class Customer implements Serializable {
         return "showCustomer";
     }
 
-    public Customer getCustomer() throws SQLException {
+    /*public Customer getCustomer() throws SQLException {
         Connection con = dbConnect.getConnection();
 
         if (con == null) {
@@ -307,37 +320,33 @@ public class Customer implements Serializable {
         result.close();
         con.close();
         return list;
-    }
+    }*/
 
-    public void customerIDExists(FacesContext context, UIComponent componentToValidate, Object value)
+    public void customerLoginExists(FacesContext context, UIComponent componentToValidate, Object value)
             throws ValidatorException, SQLException {
 
-        if (!existsCustomerId((Integer) value)) {
-            FacesMessage errorMessage = new FacesMessage("ID does not exist");
+        if (!existsCustomerLogin((String) value)) {
+            FacesMessage errorMessage = new FacesMessage("User does not exist");
             throw new ValidatorException(errorMessage);
         }
     }
 
     public void validateCustomerID(FacesContext context, UIComponent componentToValidate, Object value)
             throws ValidatorException, SQLException {
-        int id = (Integer) value;
-        if (id < 0) {
-            FacesMessage errorMessage = new FacesMessage("ID must be positive");
-            throw new ValidatorException(errorMessage);
-        }
-        if (existsCustomerId((Integer) value)) {
-            FacesMessage errorMessage = new FacesMessage("ID already exists");
+        String loginUser = (String) value;
+        if (existsCustomerLogin((String) loginUser)) {
+            FacesMessage errorMessage = new FacesMessage("User already exists");
             throw new ValidatorException(errorMessage);
         }
     }
 
-    private boolean existsCustomerId(int id) throws SQLException {
+    private boolean existsCustomerLogin(String userLogin) throws SQLException {
         Connection con = dbConnect.getConnection();
         if (con == null) {
             throw new SQLException("Can't get database connection");
         }
 
-        PreparedStatement ps = con.prepareStatement("select * from customer where customer_id = " + id);
+        PreparedStatement ps = con.prepareStatement("select * from customer where login = " + userLogin);
 
         ResultSet result = ps.executeQuery();
         if (result.next()) {
