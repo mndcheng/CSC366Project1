@@ -287,7 +287,7 @@ public class Customer implements Serializable {
         address = result.getString("address");
         created_date = result.getDate("created_date");
         return this;
-    }
+    }*/
 
     public List<Customer> getCustomerList() throws SQLException {
 
@@ -298,7 +298,7 @@ public class Customer implements Serializable {
         }
 
         PreparedStatement ps = con.prepareStatement(
-            "select login, fname, lname, email, address, ccn, expdate, crccode from customer order by lname");
+            "select login, fname, lname, email, address from customer order by lname");
 
         //get customer data from database
         ResultSet result = ps.executeQuery();
@@ -309,10 +309,11 @@ public class Customer implements Serializable {
             
             Customer cust = new Customer();
 
-            cust.setCustomerID(result.getInt("customer_id"));
-            cust.setFName(result.getString("name"));
+            cust.setFName(result.getString("fname"));
+            cust.setLName(result.getString("lname"));
+            cust.setEmail(result.getString("email"));
             cust.setAddress(result.getString("address"));
-            cust.setCreated_date(result.getDate("created_date"));
+            //cust.setCreated_date(result.getDate("created_date"));
 
             //store all data into a List
             list.add(cust);
@@ -320,7 +321,7 @@ public class Customer implements Serializable {
         result.close();
         con.close();
         return list;
-    }*/
+    }
 
     public void customerLoginExists(FacesContext context, UIComponent componentToValidate, Object value)
             throws ValidatorException, SQLException {
