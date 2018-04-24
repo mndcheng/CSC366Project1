@@ -36,7 +36,7 @@ public class Customer implements Serializable {
     }
 
     private DBConnect dbConnect = new DBConnect();
-    private Integer CID;
+    //private Integer CID;
     private String fname;
     private String lname;
     private String email;
@@ -46,7 +46,7 @@ public class Customer implements Serializable {
     private Integer crccode; 
     private Date created_date;
 
-    public Integer getCID() throws SQLException {
+    /*public Integer getCID() throws SQLException {
         if (CID == null) {
             Connection con = dbConnect.getConnection();
 
@@ -68,15 +68,29 @@ public class Customer implements Serializable {
     }
 
     public void setCustomerID(Integer customerID) {
-        this.customerID = customerID;
-    }
+        this.CID = customerID;
+    }*/
 
     public String getFName() {
         // ELContext elContext = FacesContext.getCurrentInstance().getELContext();
-    //Login login = (Login) elContext.getELResolver().getValue(elContext, null, "login");
+        //Login login = (Login) elContext.getELResolver().getValue(elContext, null, "login");
     
-      //  return login.getLogin();
-           return fname;
+        //  return login.getLogin();
+        if (fname == null) {
+            try(Connection con = dbConnect.getConnection()) {
+                PreparedStatement ps = con.prepareStatement("select fname from customer");
+                ResultSet result = ps.executeQuery();
+                if (!result.next()) {
+                    return null;
+                }
+                fname = result.getString("fname"); 
+                result.close();
+                con.close();
+            } catch(SQLException e) {
+                System.out.println("Can't get database connection"); 
+            }
+        }
+        return fname;
     }
 
     public void setFName(String fname) {
@@ -84,6 +98,20 @@ public class Customer implements Serializable {
     }
     
     public String getLName() {
+        if (lname == null) {
+            try(Connection con = dbConnect.getConnection()) {
+                PreparedStatement ps = con.prepareStatement("select lname from customer");
+                ResultSet result = ps.executeQuery();
+                if (!result.next()) {
+                    return null;
+                }
+                lname = result.getString("lname"); 
+                result.close();
+                con.close();
+            } catch(SQLException e) {
+                System.out.println("Can't get database connection"); 
+            }
+        }
         return lname;
     }
     
@@ -92,6 +120,20 @@ public class Customer implements Serializable {
     }
     
     public String getEmail() {
+        if (email == null) {
+            try(Connection con = dbConnect.getConnection()) {
+                PreparedStatement ps = con.prepareStatement("select email from customer");
+                ResultSet result = ps.executeQuery();
+                if (!result.next()) {
+                    return null;
+                }
+                email = result.getString("email"); 
+                result.close();
+                con.close();
+            } catch(SQLException e) {
+                System.out.println("Can't get database connection"); 
+            }
+        }
         return email; 
     }
     
@@ -100,6 +142,20 @@ public class Customer implements Serializable {
     }
 
     public String getAddress() {
+        if (address == null) {
+            try(Connection con = dbConnect.getConnection()) {
+                PreparedStatement ps = con.prepareStatement("select address from customer");
+                ResultSet result = ps.executeQuery();
+                if (!result.next()) {
+                    return null;
+                }
+                address = result.getString("address"); 
+                result.close();
+                con.close();
+            } catch(SQLException e) {
+                System.out.println("Can't get database connection"); 
+            }
+        }
         return address;
     }
 
@@ -108,6 +164,20 @@ public class Customer implements Serializable {
     }
     
     public String getCCN() {
+        if (ccn == null) {
+            try(Connection con = dbConnect.getConnection()) {
+                PreparedStatement ps = con.prepareStatement("select ccn from customer");
+                ResultSet result = ps.executeQuery();
+                if (!result.next()) {
+                    return null;
+                }
+                ccn = result.getString("ccn"); 
+                result.close();
+                con.close();
+            } catch(SQLException e) {
+                System.out.println("Can't get database connection"); 
+            }
+        }
         return ccn;
     }
     
@@ -151,7 +221,7 @@ public class Customer implements Serializable {
         Statement statement = con.createStatement();
 
         PreparedStatement preparedStatement = con.prepareStatement("Insert into Customer values(?,?,?,?)");
-        preparedStatement.setInt(1, customerID);
+        preparedStatement.setInt(1, CID);
         preparedStatement.setString(2, fname);
         preparedStatement.setString(3, address);
         preparedStatement.setDate(4, new java.sql.Date(created_date.getTime()));
@@ -172,7 +242,7 @@ public class Customer implements Serializable {
         con.setAutoCommit(false);
 
         Statement statement = con.createStatement();
-        statement.executeUpdate("Delete from Customer where customer_id = " + customerID);
+        statement.executeUpdate("Delete from Customer where customer_id = " + CID);
         statement.close();
         con.commit();
         con.close();
@@ -193,7 +263,7 @@ public class Customer implements Serializable {
 
         PreparedStatement ps
                 = con.prepareStatement(
-                        "select * from customer where customer_id = " + customerID);
+                        "select * from customer where customer_id = " + CID);
 
         //get customer data from database
         ResultSet result = ps.executeQuery();
@@ -214,9 +284,8 @@ public class Customer implements Serializable {
             throw new SQLException("Can't get database connection");
         }
 
-        PreparedStatement ps
-                = con.prepareStatement(
-                        "select customer_id, name, address, created_date from customer order by customer_id");
+        PreparedStatement ps = con.prepareStatement(
+            "select login, fname, lname, email, address, ccn, expdate, crccode from customer order by lname");
 
         //get customer data from database
         ResultSet result = ps.executeQuery();
@@ -225,11 +294,10 @@ public class Customer implements Serializable {
 
         while (result.next()) {
             
-            
             Customer cust = new Customer();
 
             cust.setCustomerID(result.getInt("customer_id"));
-            cust.setName(result.getString("name"));
+            cust.setFName(result.getString("name"));
             cust.setAddress(result.getString("address"));
             cust.setCreated_date(result.getDate("created_date"));
 
