@@ -36,47 +36,67 @@ public class Customer implements Serializable {
     }
 
     private DBConnect dbConnect = new DBConnect();
-    private Integer customerID;
-    private String name;
+    private Integer CID;
+    private String fname;
+    private String lname;
+    private String email;
     private String address;
+    private String ccn;
+    private Date exp_date;
+    private Integer crccode; 
     private Date created_date;
 
-    public Integer getCustomerID() throws SQLException {
-        if (customerID == null) {
+    public Integer getCID() throws SQLException {
+        if (CID == null) {
             Connection con = dbConnect.getConnection();
 
             if (con == null) {
                 throw new SQLException("Can't get database connection");
             }
 
-            PreparedStatement ps
-                    = con.prepareStatement(
+            PreparedStatement ps = con.prepareStatement(
                             "select max(customer_id)+1 from customer");
             ResultSet result = ps.executeQuery();
             if (!result.next()) {
                 return null;
             }
-            customerID = result.getInt(1);
+            CID = result.getInt(1);
             result.close();
             con.close();
         }
-        return customerID;
+        return CID;
     }
 
     public void setCustomerID(Integer customerID) {
         this.customerID = customerID;
     }
 
-    public String getName() {
+    public String getFName() {
         // ELContext elContext = FacesContext.getCurrentInstance().getELContext();
     //Login login = (Login) elContext.getELResolver().getValue(elContext, null, "login");
     
       //  return login.getLogin();
-           return name;
+           return fname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFName(String fname) {
+        this.fname = fname;
+    }
+    
+    public String getLName() {
+        return lname;
+    }
+    
+    public void setLName(String lname) {
+        this.lname = lname;
+    }
+    
+    public String getEmail() {
+        return email; 
+    }
+    
+    public void setEmail(String email) {
+        this.email = email; 
     }
 
     public String getAddress() {
@@ -85,6 +105,30 @@ public class Customer implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+    
+    public String getCCN() {
+        return ccn;
+    }
+    
+    public void setCCN(String ccn) {
+        this.ccn = ccn; 
+    }
+    
+    public Date getExpDate() {
+        return exp_date; 
+    }
+    
+    public void setExpDate(Date exp_date) {
+        this.exp_date = exp_date; 
+    }
+    
+    public Integer getCRCCode() {
+        return crccode; 
+    }
+    
+    public void setCRCCode(Integer code) {
+        this.crccode = code; 
     }
 
     public Date getCreated_date() {
@@ -108,7 +152,7 @@ public class Customer implements Serializable {
 
         PreparedStatement preparedStatement = con.prepareStatement("Insert into Customer values(?,?,?,?)");
         preparedStatement.setInt(1, customerID);
-        preparedStatement.setString(2, name);
+        preparedStatement.setString(2, fname);
         preparedStatement.setString(3, address);
         preparedStatement.setDate(4, new java.sql.Date(created_date.getTime()));
         preparedStatement.executeUpdate();
@@ -156,7 +200,7 @@ public class Customer implements Serializable {
 
         result.next();
 
-        name = result.getString("name");
+        fname = result.getString("name");
         address = result.getString("address");
         created_date = result.getDate("created_date");
         return this;
@@ -180,6 +224,8 @@ public class Customer implements Serializable {
         List<Customer> list = new ArrayList<Customer>();
 
         while (result.next()) {
+            
+            
             Customer cust = new Customer();
 
             cust.setCustomerID(result.getInt("customer_id"));
