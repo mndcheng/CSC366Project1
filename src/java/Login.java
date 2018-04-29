@@ -90,4 +90,33 @@ public class Login extends DBConnect implements Serializable {
       //  Util.invalidateUserSession();
         return "success";
     }
+    
+    private boolean existsLogin(String userLogin) throws SQLException {
+        DBConnect dbc = new DBConnect();
+        Connection con = dbc.getConnection();
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement ps = con.prepareStatement("select * from customer where login = " + userLogin);
+
+        ResultSet result = ps.executeQuery();
+        if (result.next()) {
+            result.close();
+            con.close();
+            return true;
+        }
+        result.close();
+        con.close();
+        return false;
+    }
+    
+    public void validateLogin(FacesContext context, UIComponent componentToValidate, Object value)
+            throws ValidatorException, SQLException {
+        String loginUser = (String) value;
+        if (existsLogin((String) loginUser)) {
+            FacesMessage errorMessage = new FacesMessage("Login already exists");
+            throw new ValidatorException(errorMessage);
+        }
+    }
 }

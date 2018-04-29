@@ -37,6 +37,8 @@ public class Customer implements Serializable {
     }
 
     private DBConnect dbConnect = new DBConnect();
+    private String userLogin;
+    private String userPwd; 
     private String fname;
     private String lname;
     private String email;
@@ -228,8 +230,8 @@ public class Customer implements Serializable {
         Statement statement = con.createStatement();
 
         PreparedStatement preparedStatement = con.prepareStatement("Insert into Customer values(?,?,?,?,?,?,?,?,?)");
-        preparedStatement.setString(1, getLoginUser()); // check difference between these two
-        preparedStatement.setString(2, login.getPassword());
+        preparedStatement.setString(1, userLogin); // check difference between these two
+        preparedStatement.setString(2, userPwd);
         preparedStatement.setString(3, fname);
         preparedStatement.setString(4, lname);
         preparedStatement.setString(5, email);
@@ -323,16 +325,16 @@ public class Customer implements Serializable {
         return list;
     }
 
-    public void customerLoginExists(FacesContext context, UIComponent componentToValidate, Object value)
-            throws ValidatorException, SQLException {
+//    public void customerLoginExists(FacesContext context, UIComponent componentToValidate, Object value)
+//            throws ValidatorException, SQLException {
+//
+//        if (!existsCustomerLogin((String) value)) {
+//            FacesMessage errorMessage = new FacesMessage("User does not exist");
+//            throw new ValidatorException(errorMessage);
+//        }
+//    }
 
-        if (!existsCustomerLogin((String) value)) {
-            FacesMessage errorMessage = new FacesMessage("User does not exist");
-            throw new ValidatorException(errorMessage);
-        }
-    }
-
-    public void validateCustomerID(FacesContext context, UIComponent componentToValidate, Object value)
+    public void validateCustomerLogin(FacesContext context, UIComponent componentToValidate, Object value)
             throws ValidatorException, SQLException {
         String loginUser = (String) value;
         if (existsCustomerLogin((String) loginUser)) {
