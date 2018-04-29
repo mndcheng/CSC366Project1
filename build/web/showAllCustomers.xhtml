@@ -17,27 +17,27 @@
 
             <h:column>
                 <f:facet name="header"> First Name </f:facet>
-                    #{c.fname}
+                    #{c.getFName()}
             </h:column>
             
             <h:column>
                 <f:facet name="header"> Last Name </f:facet>
-                    #{c.lname}
+                    #{c.getLName()}
             </h:column>
             
             <h:column>
                 <f:facet name="header"> Email </f:facet>
-                    #{c.email}
+                    #{c.getEmail()}
             </h:column>
 
             <h:column>
                 <f:facet name="header"> Address</f:facet>
-                    #{c.address}
+                    #{c.getAddress()}
             </h:column>
 
             <h:column>
                 <f:facet name="header">Created Date</f:facet>
-                    #{c.created_date}
+                    #{c.getCreated_date()}
             </h:column>
         </h:dataTable>
     </h:body>
