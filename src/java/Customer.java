@@ -41,7 +41,7 @@ public class Customer implements Serializable {
     private String email;
     private String address;
     private String ccn;
-    private String exp_date;
+    private String expdate;
     private Integer crccode; 
     private Date created_date;
 
@@ -67,7 +67,7 @@ public class Customer implements Serializable {
                 System.out.println("Can't get database connection"); 
             }
         }
-        return FName;
+        return userLogin;
     }
     
     public void setUserLogin(String userLogin) {
@@ -89,7 +89,7 @@ public class Customer implements Serializable {
                 System.out.println("Can't get database connection"); 
             }
         }
-        return FName;
+        return userPwd;
     }
     
     public void setUserPwd(String userPwd) {
@@ -207,25 +207,25 @@ public class Customer implements Serializable {
     }
     
     public String getExpdate() {
-        if (exp_date == null) {
+        if (expdate == null) {
             try(Connection con = dbConnect.getConnection()) {
                 PreparedStatement ps = con.prepareStatement("select expdate from customers");
                 ResultSet result = ps.executeQuery();
                 if (!result.next()) {
                     return null;
                 }
-                exp_date = result.getString("expdate"); 
+                expdate = result.getString("expdate"); 
                 result.close();
                 con.close();
             } catch(SQLException e) {
                 System.out.println("Can't get database connection"); 
             }
         }
-        return exp_date;
+        return expdate;
     }
     
-    public void setExpdate(String exp_date) {
-        this.exp_date = exp_date; 
+    public void setExpdate(String expdate) {
+        this.expdate = expdate; 
     }
     
     public Integer getCrccode() {
@@ -278,7 +278,7 @@ public class Customer implements Serializable {
         preparedStatement.setString(5, email);
         preparedStatement.setString(6, address);
         preparedStatement.setString(7, ccn); 
-        preparedStatement.setDate(8, stringToDate(exp_date));
+        preparedStatement.setDate(8, stringToDate(expdate));
         preparedStatement.setInt(9, crccode); 
         //preparedStatement.setDate(8, new java.sql.Date(created_date.getTime()));
         preparedStatement.executeUpdate();
