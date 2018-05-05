@@ -1,12 +1,12 @@
---drop table if exists ExtraCharges;
---drop table if exists ChargeTypes;
---drop table if exists Bills;
---drop table if exists Reservations;
---drop table if exists Customers;
---drop table if exists RoomPrices;
---drop table if exists Employees;
---drop table if exists Rooms; 
---drop table if exists BedInfo; 
+drop table if exists ExtraCharges;
+drop table if exists ChargeTypes;
+drop table if exists Bills;
+drop table if exists Reservations;
+drop table if exists Customers;
+drop table if exists RoomPrices;
+drop table if exists Employees;
+drop table if exists Rooms; 
+drop table if exists BedInfo; 
 
 create table BedInfo(
     ID integer primary key,
@@ -16,7 +16,7 @@ create table BedInfo(
 
 create table Rooms(
     RoomNum integer primary key,
-    RoomView integer check (RoomView > 0 AND RoomView >= 12),
+    RoomView text not null,
     BedID integer references BedInfo (ID),
     check (RoomNum % 100 <= 12),
     check (RoomNum < 600)
