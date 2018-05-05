@@ -13,14 +13,37 @@ import javax.faces.bean.SessionScoped;
 public class Selector implements Serializable {
 
     private String[] choices = {"Create New Customer", "List All Customers", "Find Customer", "Delete Customer"};
+    private String[] adminChoices = {"Change Your Password", "View Room Prices", "Change Room Prices",
+        "Add Employee", "Delete Employee", "Add A Customer", "Delete A Customer",
+        "Check In A Customer", "Check Out A Customer", "Add Charges To A Reservation",
+        "View A Reservation", "Create A Reservation", "Cancel A Reservation"};
+    private String[] employeeChoices = {"Change Your Password", "Add A Customer", "Delete A Customer",
+        "View Room Prices", "Check In A Customer", "Check Out A Customer", "Add Charges To A Reservation",
+        "View A Reservation", "Create A Reservation", "Cancel A Reservation"};
+    private String[] customerChoices = {"Check Your Reservations", "Create Your Reservation", "Cancel Your Reservation"};
     private String choice;
+    private String userType = "";
 
     public String[] getChoices() {
-        return choices;
+        if (userType == "admin")
+            return adminChoices;
+        if (userType == "employee")
+            return employeeChoices;
+        if (userType == "customer")
+            return customerChoices;
+
+        return choices; //delete this line once the userType has been implemented
     }
 
     public void setChoices(String[] choices) {
-        this.choices = choices;
+        if (userType == "admin")
+            this.adminChoices = choices;
+        else if (userType == "employee")
+            this.employeeChoices = choices;
+        else if (userType == "customer")
+            this.customerChoices = choices;
+        
+        this.choices = choices; //delete this line once the userType has been implemented
     }
 
     public String getChoice() {
@@ -33,6 +56,7 @@ public class Selector implements Serializable {
 
     public String transition() {
         switch (choice) {
+            //delete first 4 cases upon implementation of userType
             case "Create New Customer":
                 return "newCustomer";
             case "List All Customers":
@@ -41,6 +65,41 @@ public class Selector implements Serializable {
                 return "findCustomer";
             case "Delete Customer":
                 return "deleteCustomer";
+            //delete the above cases upon implementation of userType
+            
+            case "Change Your Password": //a,e
+                return "changePwd";
+            case "View Room Prices": //a,e
+                return "roomPrices";
+            case "Change Room Prices": //a
+                return "changeRoomPrices";
+            case "Add Employee": //a
+                return "addEmpl";
+            case "Delete Employee": //a
+                return "deleteEmpl";
+            case "Add A Customer": //a,e
+                return "addCustomer";
+            case "Delete A Customer": //a,e
+                return "deleteCustomer";
+            case "Check In A Customer": //a,e
+                return "checkInCustomer";
+            case "Check Out A Customer": //a,e
+                return "checkOutCustomer";
+            case "Add Charges To A Reservation": //a,e
+                return "addCharges";
+            case "View A Reservation": //a,e
+                return "viewReservation";
+            case "Create A Reservation": //a,e
+                return "createReservation";
+            case "Cancel A Reservation": //a,e
+                return "cancelReservation";
+                
+            case "Check Your Reservations": //customer
+                return "checkYourReservations";
+            case "Create Your Reservation": //customer
+                return "createYourReservation";
+            case "Cancel Your Reservation": //customer
+                return "cancelYourReservation";
             default:
                 return null;
         }
