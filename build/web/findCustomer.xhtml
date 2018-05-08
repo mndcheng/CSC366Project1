@@ -6,14 +6,13 @@
     <title>Find Customer</title>
     <h:head>
         <link href="css/stylesheet.css" rel="stylesheet" type="text/css" />
-        <h1>Delete Customer</h1>
+        <h1>Find Customer</h1>
     </h:head>
-
     <h:body>
         <h:form>
-            <singleCustomer:getCustomerID />
+            <singleCustomer:getCustomerID/>
             <h:panelGrid>
-                <h:commandButton value="Go" action="#{customer.deleteCustomer}"/>
+                <h:commandButton value="Go" action="#{customer.showCustomer}"/>
             </h:panelGrid>
         </h:form>
     </h:body>

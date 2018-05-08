@@ -19,12 +19,12 @@ public class Selector implements Serializable {
 
     private String[] choices;
     private String[] adminChoices = {"Change Your Password", "View Room Prices", "Change Room Prices",
-        "Add Employee", "Delete Employee", "Show All Customers", "Add A Customer", "Delete A Customer",
+        "Add Employee", "Delete Employee", "Add A Customer", "Delete A Customer",
         "Check In A Customer", "Check Out A Customer", "Add Charges To A Reservation",
         "View A Reservation", "Create A Reservation", "Cancel A Reservation"};
-    private String[] employeeChoices = {"Change Your Password", "Show All Customers", "Add A Customer",
-        "Delete A Customer", "View Room Prices", "Check In A Customer", "Check Out A Customer",
-        "Add Charges To A Reservation", "View A Reservation", "Create A Reservation", "Cancel A Reservation"};
+    private String[] employeeChoices = {"Change Your Password", "Add A Customer", "Delete A Customer",
+        "View Room Prices", "Check In A Customer", "Check Out A Customer", "Add Charges To A Reservation",
+        "View A Reservation", "Create A Reservation", "Cancel A Reservation"};
     private String[] customerChoices = {"Check Your Reservations", "Create Your Reservation", "Cancel Your Reservation"};
     private String choice;
     private String userType = "";
@@ -69,19 +69,27 @@ public class Selector implements Serializable {
 
     public String transition() {
         switch (choice) {
+            //delete first 4 cases upon implementation of userType
+            case "Create New Customer":
+                return "newCustomer";
+            case "List All Customers":
+                return "listCustomers";
+            case "Find Customer":
+                return "findCustomer";
+            case "Delete Customer":
+                return "deleteCustomer";
+            //delete the above cases upon implementation of userType
+            
+            case "Change Your Password": //a,e
+                return "changePwd";
+            case "View Room Prices": //a,e
+                return "roomPrices";
             case "Change Room Prices": //a
                 return "changeRoomPrices";
             case "Add Employee": //a
                 return "addEmpl";
             case "Delete Employee": //a
                 return "deleteEmpl";
-
-            case "Show All Customers": //a,e
-                return "showAllCustomers";
-            case "Change Your Password": //a,e
-                return "changePwd";
-            case "View Room Prices": //a,e
-                return "roomPrices";
             case "Add A Customer": //a,e
                 return "addCustomer";
             case "Delete A Customer": //a,e
