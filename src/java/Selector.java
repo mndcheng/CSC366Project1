@@ -2,6 +2,11 @@ import java.io.Serializable;
 import javax.inject.Named;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.el.ELContext;
+
+import java.util.*;
+import javax.xml.bind.annotation.*;
 
 /**
  *
@@ -12,7 +17,7 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class Selector implements Serializable {
 
-    private String[] choices = {"Create New Customer", "List All Customers", "Find Customer", "Delete Customer"};
+    private String[] choices;
     private String[] adminChoices = {"Change Your Password", "View Room Prices", "Change Room Prices",
         "Add Employee", "Delete Employee", "Add A Customer", "Delete A Customer",
         "Check In A Customer", "Check Out A Customer", "Add Charges To A Reservation",
@@ -23,27 +28,35 @@ public class Selector implements Serializable {
     private String[] customerChoices = {"Check Your Reservations", "Create Your Reservation", "Cancel Your Reservation"};
     private String choice;
     private String userType = "";
-
+    private Login login;
+    
+    public void setUserType() {
+        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+        Login login = (Login) elContext.getELResolver().getValue(elContext, null, "login");
+        userType = login.getUserType();
+    }
+    
     public String[] getChoices() {
-        if (userType == "admin")
+        setUserType();
+        
+        if (userType == "admin") {
+            choices = adminChoices;
             return adminChoices;
-        if (userType == "employee")
+        }
+        if (userType == "employee") {
+            choices = employeeChoices;
             return employeeChoices;
-        if (userType == "customer")
+        }
+        if (userType == "customer") {
+            choices = customerChoices;
             return customerChoices;
+        }
 
-        return choices; //delete this line once the userType has been implemented
+        return choices;
     }
 
     public void setChoices(String[] choices) {
-        if (userType == "admin")
-            this.adminChoices = choices;
-        else if (userType == "employee")
-            this.employeeChoices = choices;
-        else if (userType == "customer")
-            this.customerChoices = choices;
-        
-        this.choices = choices; //delete this line once the userType has been implemented
+        this.choices = choices;
     }
 
     public String getChoice() {
