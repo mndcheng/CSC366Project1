@@ -69,27 +69,18 @@ public class Selector implements Serializable {
 
     public String transition() {
         switch (choice) {
-            //delete first 4 cases upon implementation of userType
-            case "Create New Customer":
-                return "newCustomer";
-            case "List All Customers":
-                return "listCustomers";
-            case "Find Customer":
-                return "findCustomer";
-            case "Delete Customer":
-                return "deleteCustomer";
-            //delete the above cases upon implementation of userType
-            
-            case "Change Your Password": //a,e
-                return "changePwd";
-            case "View Room Prices": //a,e
-                return "roomPrices";
             case "Change Room Prices": //a
                 return "changeRoomPrices";
             case "Add Employee": //a
                 return "addEmpl";
             case "Delete Employee": //a
                 return "deleteEmpl";
+
+            case "Change Your Password": //a,e
+                return "changePwd";
+            case "View Room Prices": //a,e
+                return "roomPrices";
+            ///////
             case "Add A Customer": //a,e
                 return "addCustomer";
             case "Delete A Customer": //a,e
