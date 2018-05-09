@@ -40,27 +40,81 @@
         <from-view-id>
             /start.xhtml
         </from-view-id>
+        
         <navigation-case>
-            <from-outcome>newCustomer</from-outcome>
-            <to-view-id>/newCustomer.xhtml</to-view-id>
+            <from-outcome>changePwd</from-outcome>
+            <to-view-id>/changePwd.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
-            <from-outcome>listCustomers</from-outcome>
-            <to-view-id>/showAllCustomers.xhtml</to-view-id>
+            <from-outcome>roomPrices</from-outcome>
+            <to-view-id>/showRoomPrices.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
-            <from-outcome>findCustomer</from-outcome>
-            <to-view-id>/findCustomer.xhtml</to-view-id>
+            <from-outcome>changeRoomPrices</from-outcome>
+            <to-view-id>/changeRoomPrices.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addEmpl</from-outcome>
+            <to-view-id>/addEmployee.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>deleteEmpl</from-outcome>
+            <to-view-id>/deleteEmployee.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addCustomer</from-outcome>
+            <to-view-id>/addCustomer.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
             <from-outcome>deleteCustomer</from-outcome>
             <to-view-id>/deleteCustomer.xhtml</to-view-id>
         </navigation-case>
+        <navigation-case>
+            <from-outcome>checkInCustomer</from-outcome>
+            <to-view-id>/checkInCustomer.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>checkOutCustomer</from-outcome>
+            <to-view-id>/checkOutCustomer.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addCharges</from-outcome>
+            <to-view-id>/addCharges.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewReservation</from-outcome>
+            <to-view-id>/viewReservation.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createReservation</from-outcome>
+            <to-view-id>/createReservation.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>cancelReservation</from-outcome>
+            <to-view-id>/cancelReservation.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>checkYourReservations</from-outcome>
+            <to-view-id>/checkYourReservation.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createYourReservation</from-outcome>
+            <to-view-id>/createYourReservation.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>cancelYourReservation</from-outcome>
+            <to-view-id>/cancelYourReservation.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>showAllCustomers</from-outcome>
+            <to-view-id>/showAllCustomers.xhtml</to-view-id>
+        </navigation-case>
     </navigation-rule>
     
+<!--might need:
     <navigation-rule>
         <from-view-id>
-            /newCustomer.xhtml
+            /changePwd.xhtml
         </from-view-id>
         <navigation-case>
             <from-outcome>main</from-outcome>
@@ -70,7 +124,7 @@
     
     <navigation-rule>
         <from-view-id>
-            /findCustomer.xhtml
+            /showRoomPrices.xhtml
         </from-view-id>
         <navigation-case>
             <from-outcome>showCustomer</from-outcome>
@@ -80,13 +134,13 @@
     
     <navigation-rule>
         <from-view-id>
-            /deleteCustomer.xhtml
+            /changeRoomPrices.xhtml
         </from-view-id>
         <navigation-case>
             <from-outcome>main</from-outcome>
             <to-view-id>/start.xhtml</to-view-id>
         </navigation-case>
-    </navigation-rule>
+    </navigation-rule>-->
     
     
     
