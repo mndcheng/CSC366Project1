@@ -52,6 +52,8 @@ public class Login extends DBConnect implements Serializable {
         DBConnect dbc = new DBConnect();
         Connection con = dbc.getConnection();
         
+        con.setAutoCommit(false);
+        
         login = loginUI.getLocalValue().toString();
         password = value.toString();
         
@@ -78,6 +80,8 @@ public class Login extends DBConnect implements Serializable {
             }
             
             go();
+            con.commit(); 
+            con.close(); 
             
         } catch (SQLException e) {
             con.rollback();

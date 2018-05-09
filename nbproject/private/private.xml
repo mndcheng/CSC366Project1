@@ -3,14 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/showAllCustomers.xhtml</file>
-            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/newReservation.xhtml</file>
-            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/insertRoomData.sql</file>
-            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/newCustomer.xhtml</file>
-            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/src/java/Reservations.java</file>
-            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/src/java/CustomerSelector.java</file>
             <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/src/java/Customer.java</file>
-            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/customerStart.xhtml</file>
+            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/src/java/Reservations.java</file>
+            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/resources/ezcomp/getUser.xhtml</file>
+            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/src/java/Selector.java</file>
+            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/findReservation.xhtml</file>
+            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/newReservation.xhtml</file>
+            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/findCustomer.xhtml</file>
+            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/listReservations.xhtml</file>
+            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/newCustomer.xhtml</file>
+            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/WEB-INF/faces-config.xml</file>
+            <file>file:/Users/amandacheng/Documents/GitHub/CSC366Project1/web/displayReservation.xhtml</file>
         </group>
     </open-files>
 </project-private>

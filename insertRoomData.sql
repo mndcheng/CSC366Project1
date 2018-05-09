@@ -16,6 +16,7 @@ insert into employees (login, pwd, name) values ('alex', 'password', 'alex');
 insert into customers values ('newuser', 'password', 'first', 'last', 'email', 'address', '1234567890', '2018-03-02', 123);
 insert into customers values ('l', 'p', 'f', 'l', 'e', 'a', '2', '2020-12-10', 5);
 insert into customers values ('login', 'pwd', 'fname', 'lname', 'email', 'address', 'ccn', '2019-12-12', 123);
+insert into customers values ('amanda', 'p', 'amanda', 'cheng', 'email', 'address', 'ccn', '2019-12-12', 123);
 
 insert into bedinfo values (1, 1, 'single king');
 insert into bedinfo values (2, 1, 'double queen');
@@ -82,3 +83,5 @@ insert into rooms values (511, 'pool', 1);
 insert into rooms values (512, 'pool', 2);
 
 insert into reservations (custlogin, checkin, checkout, roomnum) values ('login', '2015-10-12', '2015-10-15', 112);
+insert into reservations (custlogin, checkin, checkout, roomnum) values ('amanda', '2015-10-09', '2015-10-10', 201);
+insert into reservations (custlogin, checkin, checkout, roomnum) values ('amanda', '2018-04-05', '2018-04-06', 107);

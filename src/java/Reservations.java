@@ -1,9 +1,5 @@
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.*;
 import java.util.*;
 import javax.annotation.ManagedBean;
@@ -15,7 +11,8 @@ import javax.faces.validator.ValidatorException;
 import javax.inject.Named;
 import javax.el.ELContext;
 import javax.faces.bean.ManagedProperty;
-import java.time.LocalDate; 
+import javax.faces.event.ComponentSystemEvent;
+import javax.faces.component.UIInput;
 
 @Named(value = "reservations")
 @SessionScoped
@@ -34,85 +31,42 @@ public class Reservations implements Serializable {
     }
     
     private DBConnect dbConnect = new DBConnect();
-    private String checkIn;
-    private String checkOut; 
+    private String mylogin;
+    private java.util.Date checkIn;
+    private java.util.Date checkOut; 
     private String view;
     private String bedType;
     private Integer roomNum; 
-    
-    /* can we just grab the user based on whoever's logged in? */ 
-    public String getLoginUser() {
-        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+
+    public String getMylogin() {
+         ELContext elContext = FacesContext.getCurrentInstance().getELContext();
         Login login = (Login) elContext.getELResolver().getValue(elContext, null, "login");
-    
         return login.getLogin();
     }
     
-    public String getCheckIn() {
-        if (checkIn == null) {
-            try(Connection con = dbConnect.getConnection()) {
-                PreparedStatement ps = con.prepareStatement("select checkin from reservations");
-                ResultSet result = ps.executeQuery();
-                if (!result.next()) {
-                    return null;
-                }
-                checkIn = result.getString("checkin"); 
-                result.close();
-                con.close();
-            } catch(SQLException e) {
-                System.out.println("Can't get database connection"); 
-            }
-        }
-        return checkIn;
+    public void setMylogin(String mylogin) {
+        this.mylogin = mylogin;
     }
     
-    public void setCheckIn (String checkIn) {
+    public java.util.Date getCheckIn() {
+      return checkIn;
+    }
+    
+    public void setCheckIn (java.util.Date checkIn) {
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
         this.checkIn = checkIn; 
     }
     
-    public String getCheckOut() {
-        if (checkOut == null) {
-            try(Connection con = dbConnect.getConnection()) {
-                PreparedStatement ps = con.prepareStatement("select checkout from reservations");
-                ResultSet result = ps.executeQuery();
-                if (!result.next()) {
-                    return null;
-                }
-                checkOut = result.getString("checkout"); 
-                result.close();
-                con.close();
-            } catch(SQLException e) {
-                System.out.println("Can't get database connection"); 
-            }
-        }
+    public java.util.Date getCheckOut() {
         return checkOut;
     }
     
-    public void setCheckOut (String checkOut) {
+    public void setCheckOut (java.util.Date checkOut) {
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
         this.checkOut = checkOut; 
     }
     
     public String getView() {
-        if (view == null) {
-            try(Connection con = dbConnect.getConnection()) {
-                PreparedStatement ps = con.prepareStatement("select roomnum from reservations");
-                ResultSet result = ps.executeQuery();
-                if (!result.next()) {
-                    return null;
-                }
-                int roomNum = result.getInt("roomnum"); 
-                int viewNum = roomNum % 100;
-                if (viewNum >= 1 || viewNum <= 6) {
-                    view = "ocean";
-                } else {
-                    view = "pool";
-                }
-                result.close();
-                con.close();
-            } catch(SQLException e) {
-                System.out.println("Can't get database connection"); 
-            }
-        }
         return view;
     }
     
@@ -121,55 +75,21 @@ public class Reservations implements Serializable {
     }
     
     public String getBedType() {
-        if (bedType == null) {
-            try(Connection con = dbConnect.getConnection()) {
-                PreparedStatement ps = con.prepareStatement("select roomnum from reservations");
-                ResultSet result = ps.executeQuery();
-                if (!result.next()) {
-                    return null;
-                }
-                int roomNum = result.getInt("roomnum"); 
-                if (roomNum%2 == 0) {
-                    bedType = "double queen";
-                } else {
-                    bedType = "single king";
-                }
-                result.close();
-                con.close();
-            } catch(SQLException e) {
-                System.out.println("Can't get database connection"); 
-            }
-        }
         return bedType;
     }
     
     public void setBedType(String bedType) {
-        this.bedType = bedType; 
+        this.bedType = bedType;
     }
     
     public Integer getRoomNum() {
-        if (roomNum == null) {
-            try(Connection con = dbConnect.getConnection()) {
-                PreparedStatement ps = con.prepareStatement("select roomnum from reservations");
-                ResultSet result = ps.executeQuery();
-                if (!result.next()) {
-                    return null;
-                }
-                roomNum = result.getInt("roomnum"); 
-                result.close();
-                con.close();
-            } catch(SQLException e) {
-                System.out.println("Can't get database connection"); 
-            }
-        }
         return roomNum;
     }
     
-    public void setRoomNum (Integer roomNum) {
+    public void setRoomNum(Integer roomNum) {
         this.roomNum = roomNum; 
     }
     
-    /* connect this to DB as well? */ 
     /*public Date getCreated_date() {
         return created_date;
     }
@@ -178,7 +98,43 @@ public class Reservations implements Serializable {
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
         this.created_date = created_date;
     }*/
+    
+    public List<Reservations> checkReservation() throws SQLException {
+        Connection con = dbConnect.getConnection();
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        /* grabs information from reservations table */ 
+        String select = "select * from reservations r join rooms rms on "
+                + "(r.roomnum = rms.roomnum) join bedinfo on (bedid = id)"
+                + "where custlogin = ?";
+        PreparedStatement ps = con.prepareStatement(select);
+        ps.setString(1, login.getLogin()); 
+        ResultSet result = ps.executeQuery();
+        
+        List<Reservations> list = new ArrayList<Reservations>();
+        
+        while (result.next()) {
+            
+            Reservations res = new Reservations();
+            
+            res.setCheckIn(result.getDate("checkin"));
+            res.setCheckOut(result.getDate("checkout"));
+            res.setRoomNum(result.getInt("roomnum"));
+            //res.setActualCheckout(result.getString("actualcheckout"));
+            res.setView(result.getString("roomview"));
+            res.setBedType(result.getString("bedtype"));
 
+            //store all data into a List
+            list.add(res);
+        }
+        result.close();
+        con.close();
+        return list;
+    }
+ 
+    /* must check if reservation is valid before committing */ 
     public String createReservation() throws SQLException, ParseException {
         Connection con = dbConnect.getConnection();
 
@@ -191,10 +147,13 @@ public class Reservations implements Serializable {
         
         String insert = "insert into reservations (custlogin, checkin, checkout, roomnum) values (?,?,?,?)";
         
+        if (findRoomNum() == 0) {
+            return "badReservation";
+        }
         PreparedStatement preparedStatement = con.prepareStatement(insert);
-        preparedStatement.setString(1, getLoginUser()); 
-        preparedStatement.setDate(2, stringToDate(checkIn));
-        preparedStatement.setDate(3, stringToDate(checkOut));
+        preparedStatement.setString(1, mylogin); 
+        preparedStatement.setDate(2, new java.sql.Date(checkIn.getTime()));
+        preparedStatement.setDate(3, new java.sql.Date(checkOut.getTime()));
         preparedStatement.setInt(4, roomNum);
         //preparedStatement.setDate(8, new java.sql.Date(created_date.getTime()));
         preparedStatement.executeUpdate();
@@ -202,18 +161,85 @@ public class Reservations implements Serializable {
         con.commit();
         con.close();
         //Util.invalidateUserSession();
-        return "main";
+        return "successful";
     }
     
-    private java.sql.Date stringToDate(String dateString) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-        try {
-            java.util.Date date = format.parse(dateString);
-            return new java.sql.Date(date.getTime());
-        } catch(ParseException e) {
-            return null; 
-        }
+    /* not iterating through each available room and idk why */ 
+    public Integer findRoomNum() {
+        try (Connection con = dbConnect.getConnection()) {
+            con.setAutoCommit(false); 
+            
+            int bed; 
+            if (bedType.equals("single king")) {
+                bed = 1;
+            } else {
+                bed = 2; 
+            }
+            
+            String select = "select * from rooms where bedid = ? and roomview = ?";
+            PreparedStatement ps = con.prepareStatement(select); 
+            ps.setInt(1, bed);
+            ps.setString(2, view);
+            ResultSet result = ps.executeQuery();
+            
+            result.next();
+            setRoomNum(result.getInt("roomnum")); 
+            if (!reserved()) {
+                return 1; 
+            }
+            
+            while (result.next()) {
+                setRoomNum(result.getInt("roomnum")); 
+                if (!reserved()) {
+                    return 1; 
+                }
+            }
+            
+            con.commit();
+            con.close(); 
+            return 0; 
+        } catch (SQLException e) {
+            System.out.println("Can't get database connection"); 
+            return 0; 
+        } 
     }
+    
+    public boolean reserved() throws SQLException {
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        con.setAutoCommit(false);
+
+        Statement statement = con.createStatement();
+        
+        String select = "select count(*) as countrows from reservations where roomnum = ? and"
+                + " checkin between ? and ? or checkout between ? and ?";
+        
+        PreparedStatement preparedStatement = con.prepareStatement(select);
+        preparedStatement.setInt(1, roomNum); 
+        preparedStatement.setDate(2, new java.sql.Date(checkIn.getTime()));
+        preparedStatement.setDate(3, new java.sql.Date(checkOut.getTime()));
+        preparedStatement.setDate(4, new java.sql.Date(checkIn.getTime()));
+        preparedStatement.setDate(5, new java.sql.Date(checkOut.getTime()));
+        ResultSet rs = preparedStatement.executeQuery();
+        rs.next(); 
+        int getRes = rs.getInt("countrows"); 
+        if (getRes == 0) {
+            return false; 
+        }
+
+        statement.close();
+        con.commit();
+        con.close();
+        
+        return true;
+    }
+    
+    /*public void getNextRoom() {
+        
+    }*/
     
     public String deleteReservation() throws SQLException, ParseException {
         Connection con = dbConnect.getConnection();
@@ -223,102 +249,85 @@ public class Reservations implements Serializable {
         }
         con.setAutoCommit(false);
 
-        Statement statement = con.createStatement();
-        statement.executeUpdate("Delete from reservations where login = " + getLoginUser());
-        statement.close();
+        String delete = "delete from reservations where login = ? and checkin = ?"
+                + " and checkout = ?";
+        PreparedStatement ps = con.prepareStatement(delete);
+        ps.setString(1, mylogin);
+        ps.setDate(2, new java.sql.Date(checkIn.getTime()));
+        ps.setDate(3, new java.sql.Date(checkOut.getTime()));
+        ps.executeUpdate();
+        ps.close();
         con.commit();
         con.close();
         Util.invalidateUserSession();
         return "main";
     }
-
-    public String showReservation() {
-        return "showReservation";
-    }
-
-    /*public Customer getCustomer() throws SQLException {
+    
+    public Reservations getReservation() throws SQLException {
         Connection con = dbConnect.getConnection();
 
         if (con == null) {
             throw new SQLException("Can't get database connection");
         }
 
-        PreparedStatement ps
-                = con.prepareStatement(
-                        "select * from customer where customer_id = " + CID);
-
-        //get customer data from database
+        Reservations res = new Reservations(); 
+        String select = "select * from reservations r join rooms rm on "
+                + "(r.roomnum = rm.roomnum) join bedinfo on (bedid = id)"
+                + " where custlogin = ? and checkin = ? and checkout = ? "
+                + "and r.roomnum = ?";
+        PreparedStatement ps = con.prepareStatement(select);
+        ps.setString(1, mylogin);
+        ps.setDate(2, new java.sql.Date(checkIn.getTime()));
+        ps.setDate(3, new java.sql.Date(checkOut.getTime()));
+        ps.setInt(4, roomNum);
         ResultSet result = ps.executeQuery();
 
         result.next();
 
-        FName = result.getString("name");
-        address = result.getString("address");
-        created_date = result.getDate("created_date");
-        return this;
-    }*/
-
-    public List<Customer> getCustomerList() throws SQLException {
-
-        Connection con = dbConnect.getConnection();
-
-        if (con == null) {
-            throw new SQLException("Can't get database connection");
-        }
-
-        PreparedStatement ps = con.prepareStatement(
-            "select login, FName, LName, email, address from customers order by LName");
-
-        //get customer data from database
-        ResultSet result = ps.executeQuery();
-
-        List<Customer> list = new ArrayList<Customer>();
-
-        while (result.next()) {
-            
-            Customer cust = new Customer();
-
-            cust.setUserLogin(result.getString("login"));
-            cust.setFName(result.getString("FName"));
-            cust.setLName(result.getString("LName"));
-            cust.setEmail(result.getString("email"));
-            cust.setAddress(result.getString("address"));
-            //cust.setCreated_date(result.getDate("created_date"));
-
-            //store all data into a List
-            list.add(cust);
-        }
-        result.close();
-        con.close();
-        return list;
+        res.setCheckIn(result.getDate("checkin"));
+        res.setCheckOut(result.getDate("checkout"));
+        res.setRoomNum(result.getInt("roomnum"));
+        res.setBedType(result.getString("bedtype"));
+        res.setView(result.getString("roomview"));
+        return res;
     }
+    
+    public String goBack() {
+        return "goBack";
+    }
+    
+    /* this goes to facesmessage error even though it should be valid */ 
+    public void validateDates(ComponentSystemEvent event) throws SQLException {
+        //FacesContext fc = FacesContext.getCurrentInstance();
 
-//    public void customerLoginExists(FacesContext context, UIComponent componentToValidate, Object value)
-//            throws ValidatorException, SQLException {
-//
-//        if (!existsCustomerLogin((String) value)) {
-//            FacesMessage errorMessage = new FacesMessage("User does not exist");
-//            throw new ValidatorException(errorMessage);
-//        }
-//    }
+	UIComponent components = event.getComponent();
+        
+        // get checkIn date
+        UIInput uiInputCheckIn = (UIInput) components.findComponent("checkInRemove");
+        java.util.Date inputCheckIn = (java.util.Date)uiInputCheckIn.getLocalValue();
 
-    public void validateCustomerLogin(FacesContext context, UIComponent componentToValidate, Object value)
-            throws ValidatorException, SQLException {
-        String loginUser = (String) value;
-        if (existsCustomerLogin(loginUser)) {
-            FacesMessage errorMessage = new FacesMessage("User already exists");
+        // get checkOut Date
+        UIInput uiInputCheckOut = (UIInput) components.findComponent("checkOutRemove");
+        java.util.Date inputCheckOut = (java.util.Date)uiInputCheckOut.getLocalValue();
+
+        if (!existsReservation(inputCheckIn, inputCheckOut)) {
+            FacesMessage errorMessage = new FacesMessage("Dates range does not exist.");
             throw new ValidatorException(errorMessage);
         }
+
     }
 
-    private boolean existsCustomerLogin(String userLogin) throws SQLException {
+    private boolean existsReservation(java.util.Date checkInDate, java.util.Date checkOutDate) throws SQLException {
         Connection con = dbConnect.getConnection();
         if (con == null) {
             throw new SQLException("Can't get database connection");
         }
         
-        PreparedStatement ps = con.prepareStatement("select * from customers where login = ?");
-        ps.setString(1, userLogin); 
+        PreparedStatement ps = con.prepareStatement(
+                "select * from reservations where custlogin = ? and checkin = ? and checkout = ?");
+        ps.setString(1, mylogin); 
+        ps.setDate(2, new java.sql.Date(checkInDate.getTime()));
+        ps.setDate(3, new java.sql.Date(checkOutDate.getTime())); 
 
         ResultSet result = ps.executeQuery();
         if (result.next()) {
@@ -330,4 +339,7 @@ public class Reservations implements Serializable {
         con.close();
         return false;
     }
+    
+    // need functions that check if reservation is available for what the customer requested
+    // then return whether available or not 
 }

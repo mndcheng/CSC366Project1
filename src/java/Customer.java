@@ -15,7 +15,6 @@ import javax.faces.validator.ValidatorException;
 import javax.inject.Named;
 import javax.el.ELContext;
 import javax.faces.bean.ManagedProperty;
-import java.time.LocalDate; 
 
 @Named(value = "customer")
 @SessionScoped
@@ -315,32 +314,6 @@ public class Customer implements Serializable {
         Util.invalidateUserSession();
         return "main";
     }
-
-    public String showCustomer() {
-        return "showCustomer";
-    }
-
-    /*public Customer getCustomer() throws SQLException {
-        Connection con = dbConnect.getConnection();
-
-        if (con == null) {
-            throw new SQLException("Can't get database connection");
-        }
-
-        PreparedStatement ps
-                = con.prepareStatement(
-                        "select * from customer where customer_id = " + CID);
-
-        //get customer data from database
-        ResultSet result = ps.executeQuery();
-
-        result.next();
-
-        FName = result.getString("name");
-        address = result.getString("address");
-        created_date = result.getDate("created_date");
-        return this;
-    }*/
 
     public List<Customer> getCustomerList() throws SQLException {
 
