@@ -5,40 +5,45 @@
       xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
         <link href="css/stylesheet.css" rel="stylesheet" type="text/css" />
-        <h1>Customers</h1>
+        <h1>Reservations</h1>
     </h:head>
 
     <h:body>
-        <h:dataTable value="#{customer.getCustomerList()}" var="c" border="1">
+        <h:dataTable value="#{reservations.checkReservation()}" var="r" border="1">
             <h:column>
                 <f:facet name="header"> Customer Login </f:facet>
-                    #{c.getLoginUser()}
+                    #{r.mylogin}
             </h:column>
 
             <h:column>
-                <f:facet name="header"> First Name </f:facet>
-                    #{c.fname}
+                <f:facet name="header"> Room Number </f:facet>
+                    #{r.roomNum}
             </h:column>
             
             <h:column>
-                <f:facet name="header"> Last Name </f:facet>
-                    #{c.lname}
+                <f:facet name="header"> Room View </f:facet>
+                    #{r.view}
             </h:column>
             
             <h:column>
-                <f:facet name="header"> Email </f:facet>
-                    #{c.email}
+                <f:facet name="header"> Bed Type </f:facet>
+                    #{r.bedType}
+            </h:column>
+            
+            <h:column>
+                <f:facet name="header"> Check In </f:facet>
+                    #{r.checkIn}
+            </h:column>
+            
+            <h:column>
+                <f:facet name="header"> Check Out </f:facet>
+                    #{r.checkOut}
             </h:column>
 
-            <h:column>
-                <f:facet name="header"> Address</f:facet>
-                    #{c.address}
-            </h:column>
-
-            <h:column>
-                <f:facet name="header">Created Date</f:facet>
-                    #{c.created_date}
-            </h:column>
+            <!-- <h:column>
+                <f:facet name="header"> Actual Checkout Date </f:facet>
+                    {c.getAddress()}
+            </h:column> --> 
         </h:dataTable>
     </h:body>
 </html>

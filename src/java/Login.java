@@ -67,6 +67,8 @@ public class Login extends DBConnect implements Serializable {
         Connection con = dbc.getConnection();
         con.setAutoCommit(false);
         
+        con.setAutoCommit(false);
+        
         login = loginUI.getLocalValue().toString();
         password = value.toString();
         
@@ -99,6 +101,8 @@ public class Login extends DBConnect implements Serializable {
             else if (!isAdmin)
                 setUserType("employee");
             go();
+            con.commit(); 
+            con.close(); 
             
         } catch (SQLException e) {
             con.rollback();
@@ -109,4 +113,5 @@ public class Login extends DBConnect implements Serializable {
       //  Util.invalidateUserSession();
         return "success";
     }
+
 }

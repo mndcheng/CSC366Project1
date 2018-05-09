@@ -8,12 +8,26 @@ import java.sql.SQLException;
  */
 public class DBConnect {
 
-    public Connection getConnection() {
+    /*public Connection getConnection() {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(
                     "jdbc:postgresql://ambari-head.csc.calpoly.edu/team1", "team1",
                     "amenda"); 
+        } catch (SQLException e) {
+            System.out.println("Connection Failed! Check output console");
+            e.printStackTrace();
+            return null;
+        }
+        return connection;
+    }*/
+    
+    public Connection getConnection() {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(
+                    "jdbc:postgresql://localhost:5432/postgres", "postgres",
+                    "monkeyfacem6WWYf"); 
         } catch (SQLException e) {
             System.out.println("Connection Failed! Check output console");
             e.printStackTrace();
